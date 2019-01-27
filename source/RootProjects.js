@@ -33,13 +33,13 @@ class RootProjects extends Component {
   }
 
   async readRootDirectory() {
-    const { projects, containers, templates } = await this.getDirectories();
+    const { projects, containers, templates, snippets, tools } = await this.getDirectories();
 
-    this.setState({ projects, containers, templates });
+    this.setState({ projects, containers, templates, snippets, tools });
   }
 
   render() {
-    const { projects, containers, templates } = this.state;
+    const { projects, containers, templates, snippets, tools } = this.state;
 
     if (!projects) {
       return null;
@@ -49,7 +49,7 @@ class RootProjects extends Component {
       <Projects
         {...this.props}
         parent={projects}
-        additionalItems={[templates, containers]}
+        additionalItems={[templates, containers, snippets, tools]}
         emptyRenderer={renderEmpty}
         project={null}
       />

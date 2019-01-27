@@ -9,6 +9,8 @@ import {
 } from '@actualwave/react-native-kingnare-style';
 import { FileRow } from '@actualwave/react-native-file-tree';
 
+import Container from './Container';
+
 /*
   Make file expandable too to display its versions, topmost newest.
  */
@@ -60,11 +62,9 @@ class File extends Component {
 
   render() {
     return (
-      <SwipeableXContainer
+      <Container
         swipeLeftPanelRenderer={this.renderSwipeLeftPanel}
         swipeRightPanelRenderer={this.renderSwipeRightPanel}
-        style={{ height: 32 }}
-        contentContainerStyle={{ backgroundColor: BACKGROUND_COLOR }}
       >
         <FileRow
           {...this.props}
@@ -74,7 +74,7 @@ class File extends Component {
             paddingHorizontal: 5,
           }}
         />
-      </SwipeableXContainer>
+      </Container>
     );
   }
 }
