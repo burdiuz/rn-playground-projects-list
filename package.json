@@ -1,0 +1,15 @@
+{
+  "name": "@actualwave/rn-playground-projects-list",
+  "version": "0.0.1",
+  "private": true,
+  "main": "source/index.js",
+  "dependencies": {
+    "react": "file:../RNTestApp/node_modules/react",
+    "react-native": "file:../RNTestApp/node_modules/react-native",
+    "prop-types": "file:../RNTestApp/node_modules/prop-types",
+    "@actualwave/react-native-kingnare-style": "file:../RNTestApp/node_modules/@actualwave/react-native-kingnare-style",
+    "@actualwave/is-function": "file:../RNTestApp/node_modules/@actualwave/is-function",
+	  "@actualwave/react-native-file-tree": "file:../react-native-file-tree",
+	  "@actualwave/rn-playground-projects": "file:../rn-playground-projects"
+  }
+}
