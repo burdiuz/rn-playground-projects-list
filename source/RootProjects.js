@@ -3,20 +3,37 @@ import PropTypes from 'prop-types';
 
 import { Text } from '@actualwave/react-native-kingnare-style';
 import { Directory } from '@actualwave/react-native-files';
-import { getRootDirectories } from '@actualwave/rn-playground-projects';
+import {
+  getRootDirectories,
+  readDirectory,
+  countDirectoryChildren,
+} from '@actualwave/rn-playground-projects';
 
 import Projects from './Projects';
 import { styles } from './ProjectsView';
 
-const renderEmpty = () => {
-  return (
-    <Text style={styles.emptyText}>
-      No projects created yet. Start with creating a Project, Folder or a single File.
-    </Text>
-  );
-};
+const renderEmpty = () => (
+  <Text style={styles.emptyText}>
+    No projects created yet. Start with creating a Project, Folder or a single File.
+  </Text>
+);
 
 class RootProjects extends Component {
+  static propTypes = {
+    onAction: PropTypes.func.isRequired,
+    readDirectory: PropTypes.func,
+    countDirectoryChildren: PropTypes.func,
+    swipeLeftPanelRenderer: PropTypes.func,
+    swipeRightPanelRenderer: PropTypes.func,
+  };
+
+  static defaultProps = {
+    readDirectory,
+    countDirectoryChildren,
+    swipeLeftPanelRenderer: undefined,
+    swipeRightPanelRenderer: undefined,
+  };
+
   constructor(props) {
     super(props);
 
@@ -35,11 +52,11 @@ class RootProjects extends Component {
   async readRootDirectory() {
     const { projects, containers, templates, snippets, tools } = await this.getDirectories();
 
-    this.setState({ projects, containers, templates, snippets, tools });
+    this.setState({ projects, directories: [snippets, tools, containers, templates] });
   }
 
   render() {
-    const { projects, containers, templates, snippets, tools } = this.state;
+    const { projects, directories } = this.state;
 
     if (!projects) {
       return null;
@@ -48,10 +65,11 @@ class RootProjects extends Component {
     return (
       <Projects
         {...this.props}
-        parent={projects}
-        additionalItems={[templates, containers, snippets, tools]}
-        emptyRenderer={renderEmpty}
+        parent={null}
         project={null}
+        readDirectory={readDirectory}
+        additionalItems={directories}
+        emptyRenderer={renderEmpty}
       />
     );
   }

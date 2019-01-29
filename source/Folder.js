@@ -9,47 +9,69 @@ import {
   ACTIVE_BACKGROUND_COLOR,
 } from '@actualwave/react-native-kingnare-style';
 import { DirectoryRow } from '@actualwave/react-native-file-tree';
-import { countDirectoryChildren } from '@actualwave/rn-playground-projects';
 
 import Projects from './Projects';
 
 class Folder extends Component {
   static propTypes = {
-    item: PropTypes.shape({}),
-    onExpand: PropTypes.func,
-    onCollapse: PropTypes.func,
+    onAction: PropTypes.func.isRequired,
+    item: PropTypes.shape({}).isRequired,
+    parent: PropTypes.shape({}).isRequired,
+    project: PropTypes.shape({}).isRequired,
+    readDirectory: PropTypes.func.isRequired,
+    swipeLeftPanelRenderer: PropTypes.func,
+    swipeRightPanelRenderer: PropTypes.func,
+    onRead: PropTypes.func,
   };
 
-  state = { expanded: false, childrenCount: 0 };
-  children = createRef();
+  static defaultProps = {
+    swipeLeftPanelRenderer: undefined,
+    swipeRightPanelRenderer: undefined,
+    onRead: undefined,
+  };
+
+  state = { items: null, expanded: false, childrenCount: 0 };
 
   componentDidMount() {
-    this.updateChildrenCount();
+    this.readContents();
+  }
+
+  async readContents() {
+    const { parent, project, readDirectory } = this.props;
+
+    // FIXME move this to Folder
+    const items = await readDirectory(parent, project);
+
+    this.updateItems(items);
+  }
+
+  updateItems(items) {
+    const { additionalItems } = this.props;
+
+    this.setState({ items: [...items, ...additionalItems] }, () => {
+      const { onRead } = this.props;
+      if (onRead) {
+        onRead(items);
+      }
+    });
   }
 
   async updateChildrenCount() {
     const {
       item: { directory },
+      countDirectoryChildren,
     } = this.props;
 
-    const childrenCount = await countDirectoryChildren(directory);
+    let childrenCount;
+
+    if (countDirectoryChildren) {
+      childrenCount = await countDirectoryChildren(directory);
+    }
 
     this.setState({ childrenCount });
   }
 
-  // When this item should update
-  onShouldUpdate = (item) => {};
-
-  // When this item's parent should update
-  onShouldUpdateParent = (item) => {};
-
-  // When children should be re-read
-  onShouldUpdateChildren = (action) => {
-    // FIXME have to reload its internals and reload parent if changes apply
-    const { current } = this.children;
-
-    if (current) current.update();
-  };
+  onAction = () => {};
 
   /*
 FIXME
@@ -62,16 +84,6 @@ FIXME
         const { expanded } = this.state;
 
         return { expanded: !expanded };
-      },
-      () => {
-        const { onExpand, onCollapse } = this.props;
-        const { expanded } = this.state;
-
-        if (expanded) {
-          onExpand && onExpand();
-        } else {
-          onCollapse && onCollapse();
-        }
       },
     );
   };
@@ -91,34 +103,32 @@ FIXME
         ref={this.children}
         parent={directory}
         onRead={this.handleChildrenRead}
-        onShouldUpdateParent={this.onShouldUpdate}
-        onShouldUpdateChildren={this.onShouldUpdateChildren}
         style={{ paddingLeft: 15 }}
       />
     );
   };
 
   renderSwipeLeftPanel = () => {
-    return (
-      <View style={{ height: 32, width: '100%', backgroundColor: ACTIVE_BACKGROUND_COLOR }}>
-        <Text>Swipe Folder Left Panel</Text>
-      </View>
-    );
+    const { swipeLeftPanelRenderer } = this.props;
+
+    return swipeLeftPanelRenderer(this.props);
   };
 
   renderSwipeRightPanel = () => {
-    return (
-      <View style={{ height: 32, width: '100%', backgroundColor: ACTIVE_BACKGROUND_COLOR }}>
-        <Text>Swipe Folder Right Panel</Text>
-      </View>
-    );
+    const { swipeRightPanelRenderer } = this.props;
+
+    return swipeRightPanelRenderer(this.props);
   };
 
   renderSwipeableContainer = (row) => {
+    const { swipeLeftPanelRenderer, swipeRightPanelRenderer } = this.props;
+    const leftRenderer = swipeLeftPanelRenderer ? this.renderSwipeLeftPanel : undefined;
+    const rightRenderer = swipeRightPanelRenderer ? this.renderSwipeRightPanel : undefined;
+
     return (
       <SwipeableXContainer
-        swipeLeftPanelRenderer={this.renderSwipeLeftPanel}
-        swipeRightPanelRenderer={this.renderSwipeRightPanel}
+        swipeLeftPanelRenderer={leftRenderer}
+        swipeRightPanelRenderer={rightRenderer}
         style={{ height: 32 }}
         contentContainerStyle={{ backgroundColor: BACKGROUND_COLOR }}
       >
@@ -135,8 +145,6 @@ FIXME
         {...this.props}
         expanded={expanded}
         onPress={this.handlePress}
-        onShouldUpdateParent={this.onShouldUpdateParent}
-        onShouldUpdateChildren={this.onShouldUpdateChildren}
         containerRenderer={this.renderSwipeableContainer}
         contentRenderer={this.renderContents}
         contentLength={childrenCount}

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { View } from 'react-native';
 
 import {
@@ -15,61 +16,55 @@ import Container from './Container';
   Make file expandable too to display its versions, topmost newest.
  */
 class File extends Component {
-  onShouldUpdateParent = () => {
-    const { onShouldUpdateParent, item } = this.props;
-
-    onShouldUpdateParent(item);
+  static propTypes = {
+    onAction: PropTypes.func.isRequired,
+    item: PropTypes.shape({}).isRequired,
+    parent: PropTypes.shape({}).isRequired,
+    project: PropTypes.shape({}).isRequired,
+    swipeLeftPanelRenderer: PropTypes.func,
+    swipeRightPanelRenderer: PropTypes.func,
   };
 
-  handlePress = (event) => {
-    const { onShouldUpdateChildren, onPress, onSelect, item } = this.props;
+  static defaultProps = {
+    swipeLeftPanelRenderer: undefined,
+    swipeRightPanelRenderer: undefined,
+  };
 
+  handlePress = () => {
+    // handleAction(action)
     console.log('Click on FileRow');
-
-    onPress && onPress(event);
-    onSelect && onSelect(item);
   };
+
+  handleAction = () => {
+    const { onAction, item, parent, project } = this.props;
+
+    // onAction(action, item, parent, project)
+    console.log('Click on FileRow');
+  }
 
   renderSwipeLeftPanel = () => {
-    return (
-      <View
-        style={{
-          height: 32,
-          paddingHorizontal: 5,
-          width: '100%',
-          backgroundColor: ACTIVE_BACKGROUND_COLOR,
-        }}
-      >
-        <Text>Swipe File Left Panel</Text>
-      </View>
-    );
+    const { swipeLeftPanelRenderer } = this.props;
+
+    return swipeLeftPanelRenderer(this.props);
   };
 
   renderSwipeRightPanel = () => {
-    return (
-      <View
-        style={{
-          height: 32,
-          paddingHorizontal: 5,
-          width: '100%',
-          backgroundColor: ACTIVE_BACKGROUND_COLOR,
-        }}
-      >
-        <Text>Swipe File Right Panel</Text>
-      </View>
-    );
+    const { swipeRightPanelRenderer } = this.props;
+
+    return swipeRightPanelRenderer(this.props);
   };
 
   render() {
+    const { swipeLeftPanelRenderer, swipeRightPanelRenderer } = this.props;
+    const leftRenderer = swipeLeftPanelRenderer ? this.renderSwipeLeftPanel : undefined;
+    const rightRenderer = swipeRightPanelRenderer ? this.renderSwipeRightPanel : undefined;
+
     return (
-      <Container
-        swipeLeftPanelRenderer={this.renderSwipeLeftPanel}
-        swipeRightPanelRenderer={this.renderSwipeRightPanel}
-      >
+      <Container swipeLeftPanelRenderer={leftRenderer} swipeRightPanelRenderer={rightRenderer}>
         <FileRow
           {...this.props}
-          onShouldUpdateParent={this.onShouldUpdateParent}
           onPress={this.handlePress}
+          onAction={this.handleAction}
           style={{
             paddingHorizontal: 5,
           }}

@@ -19,6 +19,7 @@ and add custom icon, actions and stuff.
  */
 class Project extends Folder {
   static propTypes = {
+    onAction: PropTypes.func.isRequired,
     item: PropTypes.shape({}),
   };
 
