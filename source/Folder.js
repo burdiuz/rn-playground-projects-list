@@ -1,23 +1,17 @@
-import React, { Component, createRef } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { View } from 'react-native';
 
-import {
-  Text,
-  SwipeableXContainer,
-  BACKGROUND_COLOR,
-  ACTIVE_BACKGROUND_COLOR,
-} from '@actualwave/react-native-kingnare-style';
 import { DirectoryRow } from '@actualwave/react-native-file-tree';
 
+import Container from './Container';
 import Projects from './Projects';
 
 class Folder extends Component {
   static propTypes = {
-    onAction: PropTypes.func.isRequired,
+    onPress: PropTypes.func.isRequired,
     item: PropTypes.shape({}).isRequired,
-    parent: PropTypes.shape({}).isRequired,
-    project: PropTypes.shape({}).isRequired,
+    parent: PropTypes.shape({}),
+    project: PropTypes.shape({}),
     readDirectory: PropTypes.func.isRequired,
     swipeLeftPanelRenderer: PropTypes.func,
     swipeRightPanelRenderer: PropTypes.func,
@@ -25,87 +19,60 @@ class Folder extends Component {
   };
 
   static defaultProps = {
+    parent: undefined,
+    project: undefined,
     swipeLeftPanelRenderer: undefined,
     swipeRightPanelRenderer: undefined,
     onRead: undefined,
   };
 
-  state = { items: null, expanded: false, childrenCount: 0 };
+  state = { contents: null, expanded: false, childrenCount: 0 };
 
   componentDidMount() {
-    this.readContents();
+    this.read();
   }
 
-  async readContents() {
-    const { parent, project, readDirectory } = this.props;
+  async read() {
+    const { item, project, readDirectory, onError } = this.props;
 
-    // FIXME move this to Folder
-    const items = await readDirectory(parent, project);
+    try {
+      const contents = await readDirectory(item, project);
 
-    this.updateItems(items);
+      this.updateItems(contents);
+    } catch (error) {
+      if (onError) {
+        onError(error, item);
+      }
+    }
   }
 
-  updateItems(items) {
-    const { additionalItems } = this.props;
+  updateItems(contents) {
+    this.setState({ contents, childrenCount: contents.length }, () => {
+      const { onRead, item, project } = this.props;
 
-    this.setState({ items: [...items, ...additionalItems] }, () => {
-      const { onRead } = this.props;
       if (onRead) {
-        onRead(items);
+        onRead(contents, item, project);
       }
     });
   }
 
-  async updateChildrenCount() {
-    const {
-      item: { directory },
-      countDirectoryChildren,
-    } = this.props;
-
-    let childrenCount;
-
-    if (countDirectoryChildren) {
-      childrenCount = await countDirectoryChildren(directory);
-    }
-
-    this.setState({ childrenCount });
-  }
-
-  onAction = () => {};
-
-  /*
-FIXME
-  These renderers and event handlers must be propagated through container
-  like Projects which could be used as root and in Project/Directory display
- */
   handlePress = () => {
-    this.setState(
-      () => {
-        const { expanded } = this.state;
+    const { onPress, item, parent, project } = this.props;
 
-        return { expanded: !expanded };
-      },
-    );
+    this.setState(() => {
+      const { expanded } = this.state;
+
+      return { expanded: !expanded };
+    });
+
+    return onPress({ item, parent, project });
   };
 
-  handleChildrenRead = (items) => {
-    this.setState({ childrenCount: items.length });
-  };
+  renderContents = () => {
+    const { item, parent, ...props } = this.props;
+    const { contents } = this.state;
 
-  renderContents = (props) => {
-    const {
-      item: { directory },
-    } = this.props;
-
-    // FIXME it needs more props, all the renderers
-    return (
-      <Projects
-        ref={this.children}
-        parent={directory}
-        onRead={this.handleChildrenRead}
-        style={{ paddingLeft: 15 }}
-      />
-    );
+    return <Projects {...props} items={contents} parent={item} style={{ paddingLeft: 15 }} />;
   };
 
   renderSwipeLeftPanel = () => {
@@ -126,14 +93,9 @@ FIXME
     const rightRenderer = swipeRightPanelRenderer ? this.renderSwipeRightPanel : undefined;
 
     return (
-      <SwipeableXContainer
-        swipeLeftPanelRenderer={leftRenderer}
-        swipeRightPanelRenderer={rightRenderer}
-        style={{ height: 32 }}
-        contentContainerStyle={{ backgroundColor: BACKGROUND_COLOR }}
-      >
+      <Container swipeLeftPanelRenderer={leftRenderer} swipeRightPanelRenderer={rightRenderer}>
         {row}
-      </SwipeableXContainer>
+      </Container>
     );
   };
 
@@ -143,6 +105,9 @@ FIXME
     return (
       <DirectoryRow
         {...this.props}
+        style={{
+          padding: 5,
+        }}
         expanded={expanded}
         onPress={this.handlePress}
         containerRenderer={this.renderSwipeableContainer}

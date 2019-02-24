@@ -17,30 +17,26 @@ import Container from './Container';
  */
 class File extends Component {
   static propTypes = {
-    onAction: PropTypes.func.isRequired,
+    onPress: PropTypes.func.isRequired,
     item: PropTypes.shape({}).isRequired,
-    parent: PropTypes.shape({}).isRequired,
-    project: PropTypes.shape({}).isRequired,
+    parent: PropTypes.shape({}),
+    project: PropTypes.shape({}),
     swipeLeftPanelRenderer: PropTypes.func,
     swipeRightPanelRenderer: PropTypes.func,
   };
 
   static defaultProps = {
+    parent: undefined,
+    project: undefined,
     swipeLeftPanelRenderer: undefined,
     swipeRightPanelRenderer: undefined,
   };
 
   handlePress = () => {
-    // handleAction(action)
-    console.log('Click on FileRow');
+    const { onPress, item, parent, project } = this.props;
+
+    return onPress({ item, parent, project });
   };
-
-  handleAction = () => {
-    const { onAction, item, parent, project } = this.props;
-
-    // onAction(action, item, parent, project)
-    console.log('Click on FileRow');
-  }
 
   renderSwipeLeftPanel = () => {
     const { swipeLeftPanelRenderer } = this.props;
@@ -55,7 +51,7 @@ class File extends Component {
   };
 
   render() {
-    const { swipeLeftPanelRenderer, swipeRightPanelRenderer } = this.props;
+    const { swipeLeftPanelRenderer, swipeRightPanelRenderer, onPress } = this.props;
     const leftRenderer = swipeLeftPanelRenderer ? this.renderSwipeLeftPanel : undefined;
     const rightRenderer = swipeRightPanelRenderer ? this.renderSwipeRightPanel : undefined;
 
@@ -64,10 +60,10 @@ class File extends Component {
         <FileRow
           {...this.props}
           onPress={this.handlePress}
-          onAction={this.handleAction}
           style={{
-            paddingHorizontal: 5,
+            padding: 5,
           }}
+          touchable={!!onPress}
         />
       </Container>
     );

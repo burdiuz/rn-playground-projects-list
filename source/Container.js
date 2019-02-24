@@ -24,6 +24,13 @@ const Dim = () => (
 class Container extends Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
+    swipeLeftPanelRenderer: PropTypes.func,
+    swipeRightPanelRenderer: PropTypes.func,
+  };
+
+  static defaultProps = {
+    swipeLeftPanelRenderer: undefined,
+    swipeRightPanelRenderer: undefined,
   };
 
   state = { dimmed: false };
@@ -49,7 +56,7 @@ class Container extends Component {
       <SwipeableXContainer
         onSwipeConfirm={this.onSwipeConfirm}
         onSwipeFinish={this.handleSwipeFinish}
-        style={{ height: 32 }}
+        style={{ height: 42 }}
         contentContainerStyle={{
           backgroundColor: BACKGROUND_COLOR,
         }}

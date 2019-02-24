@@ -34,7 +34,6 @@ import ProjectsView from './ProjectsView';
 
 class Projects extends Component {
   static propTypes = {
-    onAction: PropTypes.func.isRequired,
     items: PropTypes.arrayOf(PropTypes.shape({})),
     additionalItems: PropTypes.arrayOf(PropTypes.shape({})),
     children: PropTypes.node,
@@ -50,22 +49,41 @@ class Projects extends Component {
     additionalItems: [],
   };
 
-  state = { items: [] };
+  state = { contents: [] };
+
+  constructor(props) {
+    super(props);
+
+    this.state = Projects.getDerivedStateFromProps(props);
+  }
 
   static getDerivedStateFromProps({ items, additionalItems }) {
     return {
-      items: [...(items || []), ...additionalItems],
+      contents: [...(items || []), ...additionalItems],
     };
+  }
+
+  renderLoading() {
+    return <Text style={{ alignSelf: 'center' }}>Loading, please wait...</Text>;
+  }
+
+  renderEmpty() {
+    return <Text style={{ alignSelf: 'center' }}>Folder is empty...</Text>;
   }
 
   render() {
     const { items, additionalItems, ...props } = this.props;
+    const { contents } = this.state;
 
     if (!items) {
-      return <Text style={{ alignSelf: 'center' }}>Loading, please wait...</Text>;
+      return this.renderLoading();
     }
 
-    return <ProjectsView {...props} items={this.state.items} />;
+    if (!contents.length) {
+      return this.renderEmpty();
+    }
+
+    return <ProjectsView {...props} items={contents} />;
   }
 }
 

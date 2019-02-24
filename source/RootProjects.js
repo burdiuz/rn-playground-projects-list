@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { Text } from '@actualwave/react-native-kingnare-style';
-import { Directory } from '@actualwave/react-native-files';
 import {
   getRootDirectories,
   readDirectory,
@@ -20,16 +19,14 @@ const renderEmpty = () => (
 
 class RootProjects extends Component {
   static propTypes = {
-    onAction: PropTypes.func.isRequired,
+    onPress: PropTypes.func.isRequired,
     readDirectory: PropTypes.func,
-    countDirectoryChildren: PropTypes.func,
     swipeLeftPanelRenderer: PropTypes.func,
     swipeRightPanelRenderer: PropTypes.func,
   };
 
   static defaultProps = {
     readDirectory,
-    countDirectoryChildren,
     swipeLeftPanelRenderer: undefined,
     swipeRightPanelRenderer: undefined,
   };
@@ -38,25 +35,28 @@ class RootProjects extends Component {
     super(props);
 
     this.state = {};
-    this.getDirectories();
-  }
-
-  getDirectories() {
-    return getRootDirectories();
   }
 
   componentDidMount() {
-    this.readRootDirectory();
+    this.readContents();
   }
 
-  async readRootDirectory() {
-    const { projects, containers, templates, snippets, tools } = await this.getDirectories();
+  async readContents() {
+    const { readDirectory } = this.props;
 
-    this.setState({ projects, directories: [snippets, tools, containers, templates] });
+    try {
+      const { projects, containers, templates, snippets, tools } = await getRootDirectories();
+
+      const contents = await readDirectory(projects);
+
+      this.setState({ contents, projects, directories: [snippets, tools, containers, templates] });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   render() {
-    const { projects, directories } = this.state;
+    const { contents, projects, directories } = this.state;
 
     if (!projects) {
       return null;
@@ -67,7 +67,7 @@ class RootProjects extends Component {
         {...this.props}
         parent={null}
         project={null}
-        readDirectory={readDirectory}
+        items={contents}
         additionalItems={directories}
         emptyRenderer={renderEmpty}
       />
