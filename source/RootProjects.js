@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 
 import { Text } from '@actualwave/react-native-kingnare-style';
 import {
-  getRootDirectories,
-  readDirectory,
+  getRootDirectories as getDefaultRootDirectories,
+  readDirectory as readProjectsDirectory,
   countDirectoryChildren,
 } from '@actualwave/rn-playground-projects';
 
@@ -21,12 +21,14 @@ class RootProjects extends Component {
   static propTypes = {
     onPress: PropTypes.func.isRequired,
     readDirectory: PropTypes.func,
+    getRootDirectories: PropTypes.func,
     swipeLeftPanelRenderer: PropTypes.func,
     swipeRightPanelRenderer: PropTypes.func,
   };
 
   static defaultProps = {
-    readDirectory,
+    readDirectory: readProjectsDirectory,
+    getRootDirectories: getDefaultRootDirectories,
     swipeLeftPanelRenderer: undefined,
     swipeRightPanelRenderer: undefined,
   };
@@ -42,7 +44,7 @@ class RootProjects extends Component {
   }
 
   async readContents() {
-    const { readDirectory } = this.props;
+    const { readDirectory, getRootDirectories } = this.props;
 
     try {
       const { projects, containers, templates, snippets, tools } = await getRootDirectories();
@@ -51,7 +53,7 @@ class RootProjects extends Component {
 
       this.setState({ contents, projects, directories: [snippets, tools, containers, templates] });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
@@ -65,7 +67,7 @@ class RootProjects extends Component {
     return (
       <Projects
         {...this.props}
-        parent={null}
+        parent={projects}
         project={null}
         items={contents}
         additionalItems={directories}

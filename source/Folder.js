@@ -29,7 +29,10 @@ class Folder extends Component {
   state = { contents: null, expanded: false, childrenCount: 0 };
 
   componentDidMount() {
+    const { item } = this.props;
+
     this.read();
+    item.addUpdatedListener(this.handleContentUpdated);
   }
 
   async read() {
@@ -46,14 +49,44 @@ class Folder extends Component {
     }
   }
 
-  updateItems(contents) {
-    this.setState({ contents, childrenCount: contents.length }, () => {
-      const { onRead, item, project } = this.props;
+  handleContentUpdated = () => {
+    this.read();
+  };
 
-      if (onRead) {
-        onRead(contents, item, project);
-      }
+  removeContentListeners() {
+    const { contents } = this.state;
+
+    if (!contents) {
+      return;
+    }
+
+    contents.forEach((contentItem) => {
+      contentItem.removeParentUpdatedListener(this.handleContentUpdated);
     });
+  }
+
+  componentWillUnmount() {
+    this.removeContentListeners();
+  }
+
+  updateItems(contents) {
+    this.setState(
+      () => {
+        this.removeContentListeners();
+        return { contents, childrenCount: contents.length };
+      },
+      () => {
+        const { onRead, item, project } = this.props;
+
+        contents.forEach((contentItem) => {
+          contentItem.addParentUpdatedListener(this.handleContentUpdated);
+        });
+
+        if (onRead) {
+          onRead(contents, item, project);
+        }
+      },
+    );
   }
 
   handlePress = () => {
