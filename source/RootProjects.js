@@ -40,21 +40,74 @@ class RootProjects extends Component {
   }
 
   componentDidMount() {
-    this.readContents();
+    this.read();
   }
 
-  async readContents() {
-    const { readDirectory, getRootDirectories } = this.props;
+  componentWillUnmount() {
+    const { projects } = this.state;
+
+    if(projects) {
+      projects.removeUpdatedListener(this.readContents);
+    }
+
+    this.removeContentListeners();
+  }
+
+  async read() {
+    const { getRootDirectories } = this.props;
 
     try {
       const { projects, containers, templates, snippets, tools } = await getRootDirectories();
 
-      const contents = await readDirectory(projects);
+      projects.addUpdatedListener(this.readContents);
 
-      this.setState({ contents, projects, directories: [snippets, tools, containers, templates] });
+      this.setState(
+        { projects, directories: [snippets, tools, containers, templates] },
+        this.readContents,
+      );
     } catch (error) {
       console.error(error);
     }
+  }
+
+  readContents = async () => {
+    const { readDirectory } = this.props;
+    const { projects } = this.state;
+
+    try {
+      const contents = await readDirectory(projects);
+
+      this.updateItems(contents);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  removeContentListeners() {
+    const { contents } = this.state;
+
+    if (!contents) {
+      return;
+    }
+
+    contents.forEach((contentItem) => {
+      contentItem.removeParentUpdatedListener(this.readContents);
+    });
+  }
+
+  updateItems(contents) {
+    this.setState(
+      () => {
+        this.removeContentListeners();
+
+        return { contents };
+      },
+      () => {
+        contents.forEach((contentItem) => {
+          contentItem.addParentUpdatedListener(this.readContents);
+        });
+      },
+    );
   }
 
   render() {
