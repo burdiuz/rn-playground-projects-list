@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { Text } from '@actualwave/react-native-kingnare-style';
 import { FILE_TYPE, DIRECTORY_TYPE, PROJECT_TYPE } from '@actualwave/rn-playground-projects';
@@ -21,6 +21,8 @@ export const styles = StyleSheet.create({
     textAlignVertical: 'center',
   },
 });
+
+const SPACING = <View style={{ height: 30 }} />;
 
 export const projectsItemRenderer = (item, index, props = {}) => {
   const { type, name, directoryName } = item;
@@ -53,7 +55,7 @@ const projectsContentRenderer = (props) => {
 
 // FIXME react-native-file-tree API chnaged significantly, verify for compliance
 
-const ProjectsView = (props) => <Files {...props} />;
+const ProjectsView = (props) => <Files {...props}>{SPACING}</Files>;
 
 ProjectsView.propTypes = {
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,

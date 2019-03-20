@@ -1,6 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-
 import Folder from './Folder';
 import ProjectRow from './ProjectRow';
 
@@ -10,9 +8,11 @@ and add custom icon, actions and stuff.
  */
 class Project extends Folder {
   static propTypes = {
-    onAction: PropTypes.func.isRequired,
-    onPress: PropTypes.func.isRequired,
-    item: PropTypes.shape({}),
+    ...Folder.propTypes,
+  };
+
+  static defaultProps = {
+    ...Folder.defaultProps,
   };
 
   render() {
