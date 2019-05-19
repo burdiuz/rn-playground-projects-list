@@ -46,7 +46,7 @@ class RootProjects extends Component {
   componentWillUnmount() {
     const { projects } = this.state;
 
-    if(projects) {
+    if (projects) {
       projects.removeUpdatedListener(this.readContents);
     }
 
@@ -57,12 +57,19 @@ class RootProjects extends Component {
     const { getRootDirectories } = this.props;
 
     try {
-      const { projects, containers, templates, snippets, tools } = await getRootDirectories();
+      const {
+        projects,
+        containers,
+        templates,
+        snippets,
+        modules,
+        tools,
+      } = await getRootDirectories();
 
       projects.addUpdatedListener(this.readContents);
 
       this.setState(
-        { projects, directories: [snippets, tools, containers, templates] },
+        { projects, directories: [modules, snippets, tools, containers, templates] },
         this.readContents,
       );
     } catch (error) {
