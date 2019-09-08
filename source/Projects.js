@@ -32,6 +32,12 @@ import ProjectsView from './ProjectsView';
   - onDelete is a callback that is called when entity is destroyed
 */
 
+export const defaultLoadingRenderer = () => (
+  <Text style={{ alignSelf: 'center' }}>Loading, please wait...</Text>
+);
+
+export const defaultEmptyRenderer = () => <Text style={{ alignSelf: 'center' }}>Folder is empty...</Text>;
+
 class Projects extends Component {
   static propTypes = {
     items: PropTypes.arrayOf(PropTypes.shape({})),
@@ -39,6 +45,8 @@ class Projects extends Component {
     children: PropTypes.node,
     itemRenderer: PropTypes.func,
     emptyRenderer: PropTypes.func,
+    renderListLoading: PropTypes.func,
+    renderListEmpty: PropTypes.func,
   };
 
   static defaultProps = {
@@ -47,6 +55,8 @@ class Projects extends Component {
     itemRenderer: undefined,
     emptyRenderer: undefined,
     additionalItems: [],
+    renderListLoading: defaultLoadingRenderer,
+    renderListEmpty: defaultEmptyRenderer,
   };
 
   state = { contents: [] };
@@ -63,24 +73,16 @@ class Projects extends Component {
     };
   }
 
-  renderLoading() {
-    return <Text style={{ alignSelf: 'center' }}>Loading, please wait...</Text>;
-  }
-
-  renderEmpty() {
-    return <Text style={{ alignSelf: 'center' }}>Folder is empty...</Text>;
-  }
-
   render() {
-    const { items, additionalItems, ...props } = this.props;
+    const { renderListLoading, renderListEmpty, items, additionalItems, ...props } = this.props;
     const { contents } = this.state;
 
     if (!items) {
-      return this.renderLoading();
+      return renderListLoading();
     }
 
     if (!contents.length) {
-      return this.renderEmpty();
+      return renderListEmpty();
     }
 
     return <ProjectsView {...props} items={contents} />;

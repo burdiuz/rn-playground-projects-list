@@ -8,7 +8,7 @@ import {
   countDirectoryChildren,
 } from '@actualwave/rn-playground-projects';
 
-import Projects from './Projects';
+import Projects, { defaultLoadingRenderer } from './Projects';
 import { styles } from './ProjectsView';
 
 const renderEmpty = () => (
@@ -24,6 +24,7 @@ class RootProjects extends Component {
     getRootDirectories: PropTypes.func,
     swipeLeftPanelRenderer: PropTypes.func,
     swipeRightPanelRenderer: PropTypes.func,
+    renderListLoading: PropTypes.func,
   };
 
   static defaultProps = {
@@ -31,6 +32,7 @@ class RootProjects extends Component {
     getRootDirectories: getDefaultRootDirectories,
     swipeLeftPanelRenderer: undefined,
     swipeRightPanelRenderer: undefined,
+    renderListLoading: defaultLoadingRenderer,
   };
 
   constructor(props) {
@@ -118,10 +120,11 @@ class RootProjects extends Component {
   }
 
   render() {
+    const { renderListLoading } = this.props;
     const { contents, projects, directories } = this.state;
 
     if (!projects) {
-      return null;
+      return renderListLoading();
     }
 
     return (
