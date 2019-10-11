@@ -229,7 +229,6 @@ class Folder extends Component {
         listItemFilter={listItemFilter}>
         {this.renderFolderChildren()}
       </DirectoryRow>
-      />
     );
   }
 }

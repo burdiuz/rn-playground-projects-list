@@ -3,11 +3,6 @@ import PropTypes from 'prop-types';
 import { StyleSheet, View } from 'react-native';
 
 import { Text } from '@actualwave/react-native-kingnare-style';
-import {
-  FILE_TYPE,
-  DIRECTORY_TYPE,
-  PROJECT_TYPE,
-} from '@actualwave/rn-playground-projects';
 import { Files } from '@actualwave/react-native-file-tree';
 
 import { FILE_TYPE, DIRECTORY_TYPE, PROJECT_TYPE } from './constants';
