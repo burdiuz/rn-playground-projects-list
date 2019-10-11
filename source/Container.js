@@ -8,27 +8,21 @@ import {
   BACKGROUND_COLOR,
 } from '@actualwave/react-native-kingnare-style';
 
-const styles = StyleSheet.create({
-  container: {
-    height: 42,
-  },
-  dim: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 0xffffff66,
-  },
-});
+import styles from './styles';
 
-const Dim = () => <View style={styles.dim} />;
+const Dim = () => (
+  <View
+    style={styles.dim}
+  />
+);
 
 class Container extends Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
     swipeLeftPanelRenderer: PropTypes.func,
     swipeRightPanelRenderer: PropTypes.func,
+    isLeftSwipeable: PropTypes.func,
+    isRightSwipeable: PropTypes.func,
   };
 
   static defaultProps = {

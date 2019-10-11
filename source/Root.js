@@ -3,39 +3,35 @@ import PropTypes from 'prop-types';
 
 import { Text } from '@actualwave/react-native-kingnare-style';
 import {
-  getRootDirectories as getRootDirectoriesDefault,
+  getRoot as getRootDefault,
   readDirectory as readDirectoryDefault,
 } from '@actualwave/rn-playground-projects';
 
-import Projects, { defaultLoadingRenderer } from './Projects';
-import { styles } from './ProjectsView';
+import Projects from './Projects';
+import { styles } from './styles';
 
 const renderEmpty = () => (
   <Text style={styles.projectsEmptyText}>
-    No projects created yet. Start with creating a Project, Folder or a single File.
+    Nothing found here. Try reinstalling the app.
   </Text>
 );
 
-class RootProjects extends Component {
+class Root extends Component {
   static propTypes = {
     onPress: PropTypes.func.isRequired,
-    readDirectory: PropTypes.func,
     listItemFilter: PropTypes.func,
-    getRootDirectories: PropTypes.func,
+    getRoot: PropTypes.func,
+    readDirectory: PropTypes.func,
     swipeLeftPanelRenderer: PropTypes.func,
     swipeRightPanelRenderer: PropTypes.func,
-    folderAdditionalContentRenderer: PropTypes.func,
-    renderListLoading: PropTypes.func,
   };
 
   static defaultProps = {
+    getRoot: getRootDefault,
     readDirectory: readDirectoryDefault,
-    getRootDirectories: getRootDirectoriesDefault,
     listItemFilter: undefined,
     swipeLeftPanelRenderer: undefined,
     swipeRightPanelRenderer: undefined,
-    folderAdditionalContentRenderer: undefined,
-    renderListLoading: defaultLoadingRenderer,
   };
 
   constructor(props) {
@@ -49,47 +45,24 @@ class RootProjects extends Component {
   }
 
   componentWillUnmount() {
-    const { projects } = this.state;
+    const { root } = this.state;
 
-    if (projects) {
-      projects.removeUpdatedListener(this.readContents);
+    if (root) {
+      root.removeUpdatedListener(this.readContents);
     }
 
     this.removeContentListeners();
   }
 
   async read() {
-    const { getRootDirectories } = this.props;
+    const { getRoot } = this.props;
 
     try {
-      const {
-        projects,
-        containers,
-        templates,
-        snippets,
-        modules,
-        tools,
-      } = await getRootDirectories();
+      const root = await getRoot();
 
-      projects.addUpdatedListener(this.readContents);
+      root.addUpdatedListener(this.readContents);
 
-      const directories = [snippets, templates, modules, containers, tools];
-
-      directories.forEach((item) =>
-        item.addUpdatedListener(() => {
-          this.setState({
-            directories,
-          });
-        }),
-      );
-
-      this.setState(
-        {
-          projects,
-          directories,
-        },
-        this.readContents,
-      );
+      this.setState({ root }, this.readContents);
     } catch (error) {
       console.error(error);
     }
@@ -97,10 +70,10 @@ class RootProjects extends Component {
 
   readContents = async () => {
     const { readDirectory } = this.props;
-    const { projects } = this.state;
+    const { root } = this.state;
 
     try {
-      const contents = await readDirectory(projects);
+      const contents = await readDirectory(root);
 
       this.updateItems(contents);
     } catch (error) {
@@ -136,24 +109,22 @@ class RootProjects extends Component {
   }
 
   render() {
-    const { renderListLoading } = this.props;
-    const { contents, projects, directories } = this.state;
+    const { contents, root } = this.state;
 
-    if (!projects) {
-      return renderListLoading();
+    if (!root) {
+      return null;
     }
 
     return (
       <Projects
         {...this.props}
-        parent={projects}
+        parent={root}
         project={null}
         items={contents}
-        additionalItems={directories}
         emptyRenderer={renderEmpty}
       />
     );
   }
 }
 
-export default RootProjects;
+export default Root;
