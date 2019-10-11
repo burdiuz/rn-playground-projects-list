@@ -3,7 +3,11 @@ import PropTypes from 'prop-types';
 import { StyleSheet, View } from 'react-native';
 
 import { Text } from '@actualwave/react-native-kingnare-style';
-import { FILE_TYPE, DIRECTORY_TYPE, PROJECT_TYPE } from '@actualwave/rn-playground-projects';
+import {
+  FILE_TYPE,
+  DIRECTORY_TYPE,
+  PROJECT_TYPE,
+} from '@actualwave/rn-playground-projects';
 import { Files } from '@actualwave/react-native-file-tree';
 
 import File from './File';
@@ -20,9 +24,12 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
     textAlignVertical: 'center',
   },
+  spacing: {
+    height: 15,
+  },
 });
 
-const SPACING = <View style={{ height: 30 }} />;
+const SPACING = <View style={styles.spacing} />;
 
 export const projectsItemRenderer = (item, index, props = {}) => {
   const { type, name, directoryName } = item;
@@ -46,7 +53,11 @@ export const projectsItemRenderer = (item, index, props = {}) => {
 };
 
 const projectsEmptyRenderer = () => {
-  return <Text style={styles.emptyText}>The folder is empty, no files added yet.</Text>;
+  return (
+    <Text style={styles.emptyText}>
+      The folder is empty, no files added yet.
+    </Text>
+  );
 };
 
 const projectsContentRenderer = (props) => {

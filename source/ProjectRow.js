@@ -5,7 +5,11 @@ import FontFamily from 'react-native-vector-icons/FontAwesome';
 
 import { Text } from '@actualwave/react-native-kingnare-style';
 
-import { DirectoryRow, renderers, styles } from '@actualwave/react-native-file-tree';
+import {
+  DirectoryRow,
+  renderers,
+  styles,
+} from '@actualwave/react-native-file-tree';
 
 import { PROJECT_TYPE } from './constants';
 
@@ -38,6 +42,10 @@ const projectStyles = StyleSheet.create({
       borderBottomColor: '#404040',
     },
   ]),
+  counter: {
+    color: 0x505050ff,
+    fontWeight: '400',
+  },
 });
 
 export const projectIconRenderer = (item, props) => {
@@ -50,7 +58,9 @@ export const projectIconRenderer = (item, props) => {
         name={expanded ? 'chevron-down' : 'chevron-right'}
         size={14}
         color="#ccc"
-        style={expanded ? projectStyles.iconExpanded : projectStyles.iconCollapsed}
+        style={
+          expanded ? projectStyles.iconExpanded : projectStyles.iconCollapsed
+        }
       />
     );
   }
@@ -71,7 +81,7 @@ export const projectTitleRenderer = (item, props) => {
     return (
       <Text style={projectStyles.title}>
         {name}
-        <Text style={{ color: 0x505050ff, fontWeight: '400' }}> ({length || '0'})</Text>
+        <Text style={projectStyles.counter}> ({length || '0'})</Text>
       </Text>
     );
   }

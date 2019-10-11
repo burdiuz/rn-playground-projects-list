@@ -1,10 +1,20 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { StyleSheet } from 'react-native';
 
 import { DirectoryRow } from '@actualwave/react-native-file-tree';
 
 import Container from './Container';
 import Projects from './Projects';
+
+const styles = StyleSheet.create({
+  paddingLeft5: {
+    paddingLeft: 5,
+  },
+  paddingLeft15: {
+    paddingLeft: 15,
+  },
+});
 
 class Folder extends Component {
   static propTypes = {
@@ -15,6 +25,7 @@ class Folder extends Component {
     readDirectory: PropTypes.func.isRequired,
     swipeLeftPanelRenderer: PropTypes.func,
     swipeRightPanelRenderer: PropTypes.func,
+    folderAdditionalContentRenderer: PropTypes.func,
     onRead: PropTypes.func,
   };
 
@@ -23,6 +34,7 @@ class Folder extends Component {
     project: undefined,
     swipeLeftPanelRenderer: undefined,
     swipeRightPanelRenderer: undefined,
+    folderAdditionalContentRenderer: undefined,
     onRead: undefined,
   };
 
@@ -105,31 +117,55 @@ class Folder extends Component {
     const { item, parent, ...props } = this.props;
     const { contents } = this.state;
 
-    return <Projects {...props} items={contents} parent={item} style={{ paddingLeft: 15 }} />;
+    return (
+      <Projects
+        {...props}
+        items={contents}
+        parent={item}
+        style={styles.paddingLeft15}
+      />
+    );
   };
 
-  renderSwipeLeftPanel = () => {
+  renderSwipeLeftPanel = (swipable) => {
     const { swipeLeftPanelRenderer } = this.props;
 
-    return swipeLeftPanelRenderer(this.props);
+    return swipeLeftPanelRenderer(this.props, swipable);
   };
 
-  renderSwipeRightPanel = () => {
+  renderSwipeRightPanel = (swipable) => {
     const { swipeRightPanelRenderer } = this.props;
 
-    return swipeRightPanelRenderer(this.props);
+    return swipeRightPanelRenderer(this.props, swipable);
   };
 
   renderSwipeableContainer = (row) => {
     const { swipeLeftPanelRenderer, swipeRightPanelRenderer } = this.props;
-    const leftRenderer = swipeLeftPanelRenderer ? this.renderSwipeLeftPanel : undefined;
-    const rightRenderer = swipeRightPanelRenderer ? this.renderSwipeRightPanel : undefined;
+    const leftRenderer = swipeLeftPanelRenderer
+      ? this.renderSwipeLeftPanel
+      : undefined;
+    const rightRenderer = swipeRightPanelRenderer
+      ? this.renderSwipeRightPanel
+      : undefined;
 
     return (
-      <Container swipeLeftPanelRenderer={leftRenderer} swipeRightPanelRenderer={rightRenderer}>
+      <Container
+        swipeLeftPanelRenderer={leftRenderer}
+        swipeRightPanelRenderer={rightRenderer}>
         {row}
       </Container>
     );
+  };
+
+  renderFolderChildren = (row) => {
+    const { folderAdditionalContentRenderer } = this.props;
+    const { expanded } = this.state;
+
+    if (folderAdditionalContentRenderer && expanded) {
+      return folderAdditionalContentRenderer(this.props);
+    }
+
+    return null;
   };
 
   render() {
@@ -138,15 +174,14 @@ class Folder extends Component {
     return (
       <DirectoryRow
         {...this.props}
-        style={{
-          padding: 5,
-        }}
+        style={styles.paddingLeft5}
         expanded={expanded}
         onPress={this.handlePress}
         containerRenderer={this.renderSwipeableContainer}
         contentRenderer={this.renderContents}
-        contentLength={childrenCount}
-      />
+        contentLength={childrenCount}>
+        {this.renderFolderChildren()}
+      </DirectoryRow>
     );
   }
 }
