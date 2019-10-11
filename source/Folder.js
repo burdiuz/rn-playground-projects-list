@@ -4,17 +4,11 @@ import { StyleSheet } from 'react-native';
 
 import { DirectoryRow } from '@actualwave/react-native-file-tree';
 
+import { defaultIsSelectedItem, defaultIsSelectedItemParent } from './utils';
 import Container from './Container';
 import Projects from './Projects';
 
-const styles = StyleSheet.create({
-  paddingLeft5: {
-    paddingLeft: 5,
-  },
-  paddingLeft15: {
-    paddingLeft: 15,
-  },
-});
+import styles from './styles';
 
 class Folder extends Component {
   static propTypes = {
@@ -25,7 +19,12 @@ class Folder extends Component {
     readDirectory: PropTypes.func.isRequired,
     swipeLeftPanelRenderer: PropTypes.func,
     swipeRightPanelRenderer: PropTypes.func,
+    isLeftSwipeable: PropTypes.func,
+    isRightSwipeable: PropTypes.func,
     folderAdditionalContentRenderer: PropTypes.func,
+    listItemFilter: PropTypes.func,
+    isSelectedItem: PropTypes.func,
+    isSelectedItemParent: PropTypes.func,
     onRead: PropTypes.func,
   };
 
@@ -34,9 +33,24 @@ class Folder extends Component {
     project: undefined,
     swipeLeftPanelRenderer: undefined,
     swipeRightPanelRenderer: undefined,
+    isLeftSwipeable: undefined,
+    isRightSwipeable: undefined,
     folderAdditionalContentRenderer: undefined,
+    listItemFilter: undefined,
+    isSelectedItem: defaultIsSelectedItem,
+    isSelectedItemParent: defaultIsSelectedItemParent,
     onRead: undefined,
   };
+
+  static getDerivedStateFromProps({ selectedItem, item, isSelectedItem, isSelectedItemParent }) {
+    if (!selectedItem) {
+      return null;
+    }
+
+    return {
+      expanded: isSelectedItem(item, selectedItem) || isSelectedItemParent(item, selectedItem),
+    };
+  }
 
   state = { contents: null, expanded: false, childrenCount: 0 };
 
@@ -82,10 +96,15 @@ class Folder extends Component {
   }
 
   updateItems(contents) {
+    const { listItemFilter } = this.props;
+
     this.setState(
       () => {
         this.removeContentListeners();
-        return { contents, childrenCount: contents.length };
+        return {
+          contents,
+          childrenCount: listItemFilter ? contents.filter(listItemFilter).length : contents.length,
+        };
       },
       () => {
         const { onRead, item, project } = this.props;
@@ -113,45 +132,71 @@ class Folder extends Component {
     return onPress({ item, parent, project });
   };
 
+  getStyle() {
+    const { item, selectedItem, isSelectedItem, isSelectedItemParent } = this.props;
+
+    let style = styles.folder;
+
+    if (isSelectedItem(item, selectedItem)) {
+      style = styles.folderSelected;
+    } else if (isSelectedItemParent(item, selectedItem)) {
+      style = styles.folderSelectedParent;
+    }
+
+    return style;
+  }
+
   renderContents = () => {
     const { item, parent, ...props } = this.props;
     const { contents } = this.state;
 
-    return (
-      <Projects
-        {...props}
-        items={contents}
-        parent={item}
-        style={styles.paddingLeft15}
-      />
-    );
+    return <Projects {...props} items={contents} parent={item} style={styles.nestedProjects} />;
   };
 
-  renderSwipeLeftPanel = (swipable) => {
+  isLeftSwipeable = () => {
+    const { isLeftSwipeable } = this.props;
+
+    return isLeftSwipeable(this.props);
+  };
+
+  renderSwipeLeftPanel = (swipeContainer) => {
     const { swipeLeftPanelRenderer } = this.props;
 
-    return swipeLeftPanelRenderer(this.props, swipable);
+    return swipeLeftPanelRenderer(this.props, swipeContainer);
   };
 
-  renderSwipeRightPanel = (swipable) => {
+  isRightSwipeable = () => {
+    const { isRightSwipeable } = this.props;
+
+    return isRightSwipeable(this.props);
+  };
+
+  renderSwipeRightPanel = (swipeContainer) => {
     const { swipeRightPanelRenderer } = this.props;
 
-    return swipeRightPanelRenderer(this.props, swipable);
+    return swipeRightPanelRenderer(this.props, swipeContainer);
   };
 
   renderSwipeableContainer = (row) => {
-    const { swipeLeftPanelRenderer, swipeRightPanelRenderer } = this.props;
-    const leftRenderer = swipeLeftPanelRenderer
-      ? this.renderSwipeLeftPanel
-      : undefined;
-    const rightRenderer = swipeRightPanelRenderer
-      ? this.renderSwipeRightPanel
-      : undefined;
+    const {
+      swipeLeftPanelRenderer,
+      swipeRightPanelRenderer,
+      isLeftSwipeable,
+      isRightSwipeable,
+    } = this.props;
+
+    const leftRenderer = swipeLeftPanelRenderer ? this.renderSwipeLeftPanel : undefined;
+    const rightRenderer = swipeRightPanelRenderer ? this.renderSwipeRightPanel : undefined;
+    const leftSwipeable = isLeftSwipeable ? this.isLeftSwipeable : undefined;
+    const rightSwipeable = isRightSwipeable ? this.isRightSwipeable : undefined;
 
     return (
       <Container
         swipeLeftPanelRenderer={leftRenderer}
-        swipeRightPanelRenderer={rightRenderer}>
+        swipeRightPanelRenderer={rightRenderer}
+        isLeftSwipeable={leftSwipeable}
+        isRightSwipeable={rightSwipeable}
+      >
         {row}
       </Container>
     );
@@ -169,19 +214,22 @@ class Folder extends Component {
   };
 
   render() {
+    const { listItemFilter } = this.props;
     const { expanded, childrenCount } = this.state;
 
     return (
       <DirectoryRow
         {...this.props}
-        style={styles.paddingLeft5}
+        style={this.getStyle()}
         expanded={expanded}
         onPress={this.handlePress}
         containerRenderer={this.renderSwipeableContainer}
         contentRenderer={this.renderContents}
-        contentLength={childrenCount}>
+        contentLength={childrenCount}
+        listItemFilter={listItemFilter}>
         {this.renderFolderChildren()}
       </DirectoryRow>
+      />
     );
   }
 }

@@ -1,52 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { View, StyleSheet } from 'react-native';
-import FontFamily from 'react-native-vector-icons/FontAwesome';
+import FontFamily from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { Text } from '@actualwave/react-native-kingnare-style';
 
-import {
-  DirectoryRow,
-  renderers,
-  styles,
-} from '@actualwave/react-native-file-tree';
+import { DirectoryRow, renderers } from '@actualwave/react-native-file-tree';
 
 import { PROJECT_TYPE } from './constants';
 
+import styles from './styles';
+
 const { directoryIconRenderer, directoryTitleRenderer } = renderers;
-
-const { folderRowStyles } = styles;
-
-const projectStyles = StyleSheet.create({
-  iconExpanded: StyleSheet.flatten([
-    folderRowStyles.icon,
-    {
-      padding: 2,
-      paddingTop: 6,
-      paddingLeft: 4,
-    },
-  ]),
-  iconCollapsed: StyleSheet.flatten([
-    folderRowStyles.icon,
-    {
-      padding: 2,
-      paddingTop: 7,
-      paddingLeft: 8,
-    },
-  ]),
-  title: StyleSheet.flatten([folderRowStyles.title, { fontWeight: '600' }]),
-  container: StyleSheet.flatten([
-    folderRowStyles.container,
-    {
-      borderBottomWidth: 1,
-      borderBottomColor: '#404040',
-    },
-  ]),
-  counter: {
-    color: 0x505050ff,
-    fontWeight: '400',
-  },
-});
 
 export const projectIconRenderer = (item, props) => {
   const { expanded } = props;
@@ -55,12 +20,10 @@ export const projectIconRenderer = (item, props) => {
   if (type === PROJECT_TYPE) {
     return (
       <FontFamily
-        name={expanded ? 'chevron-down' : 'chevron-right'}
-        size={14}
+        name={expanded ? 'folder-open-outline' : 'folder-text-outline'}
+        size={24}
         color="#ccc"
-        style={
-          expanded ? projectStyles.iconExpanded : projectStyles.iconCollapsed
-        }
+        style={expanded ? styles.projectIconExpanded : styles.projectIconCollapsed}
       />
     );
   }
@@ -79,9 +42,9 @@ export const projectTitleRenderer = (item, props) => {
 
   if (type === PROJECT_TYPE) {
     return (
-      <Text style={projectStyles.title}>
+      <Text style={styles.projectTitle}>
         {name}
-        <Text style={projectStyles.counter}> ({length || '0'})</Text>
+        <Text style={styles.childrenCount}> ({length || '0'})</Text>
       </Text>
     );
   }
@@ -95,7 +58,7 @@ const ProjectRow = (props) => {
   const { style, children } = props;
 
   return (
-    <DirectoryRow {...props} style={style || projectStyles.container} touchable>
+    <DirectoryRow {...props} style={style || styles.project} touchable>
       {children}
     </DirectoryRow>
   );

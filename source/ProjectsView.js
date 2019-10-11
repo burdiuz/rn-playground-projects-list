@@ -10,26 +10,15 @@ import {
 } from '@actualwave/rn-playground-projects';
 import { Files } from '@actualwave/react-native-file-tree';
 
+import { FILE_TYPE, DIRECTORY_TYPE, PROJECT_TYPE } from './constants';
+
 import File from './File';
 import Folder from './Folder';
 import Project from './Project';
 
-export const styles = StyleSheet.create({
-  scroll: {
-    flex: 1,
-  },
-  projects: {},
-  emptyText: {
-    padding: 20,
-    textAlign: 'center',
-    textAlignVertical: 'center',
-  },
-  spacing: {
-    height: 15,
-  },
-});
+import styles from './styles';
 
-const SPACING = <View style={styles.spacing} />;
+const SPACING = <View style={styles.projectViewSpacing} />;
 
 export const projectsItemRenderer = (item, index, props = {}) => {
   const { type, name, directoryName } = item;
@@ -54,7 +43,7 @@ export const projectsItemRenderer = (item, index, props = {}) => {
 
 const projectsEmptyRenderer = () => {
   return (
-    <Text style={styles.emptyText}>
+    <Text style={styles.projectsEmptyText}>
       The folder is empty, no files added yet.
     </Text>
   );
@@ -64,7 +53,7 @@ const projectsContentRenderer = (props) => {
   return <ProjectsView {...props} />;
 };
 
-// FIXME react-native-file-tree API chnaged significantly, verify for compliance
+// FIXME react-native-file-tree API changed significantly, verify for compliance
 
 const ProjectsView = (props) => <Files {...props}>{SPACING}</Files>;
 

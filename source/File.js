@@ -1,22 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { View, StyleSheet } from 'react-native';
-
-import {
-  Text,
-  SwipeableXContainer,
-  BACKGROUND_COLOR,
-  ACTIVE_BACKGROUND_COLOR,
-} from '@actualwave/react-native-kingnare-style';
 import { FileRow } from '@actualwave/react-native-file-tree';
 
+import { defaultIsSelectedItem } from './utils';
 import Container from './Container';
 
-const styles = StyleSheet.create({
-  paddingLeft5: {
-    paddingLeft: 5,
-  },
-});
+import styles from './styles';
 
 /*
   Make file expandable too to display its versions, topmost newest.
@@ -29,6 +18,7 @@ class File extends Component {
     project: PropTypes.shape({}),
     swipeLeftPanelRenderer: PropTypes.func,
     swipeRightPanelRenderer: PropTypes.func,
+    isSelectedItem: PropTypes.func,
   };
 
   static defaultProps = {
@@ -36,6 +26,7 @@ class File extends Component {
     project: undefined,
     swipeLeftPanelRenderer: undefined,
     swipeRightPanelRenderer: undefined,
+    isSelectedItem: defaultIsSelectedItem,
   };
 
   handlePress = () => {
@@ -44,29 +35,67 @@ class File extends Component {
     return onPress({ item, parent, project });
   };
 
-  renderSwipeLeftPanel = (swipable) => {
-    const { swipeLeftPanelRenderer } = this.props;
+  getStyle() {
+    const { item, selectedItem, isSelectedItem } = this.props;
 
-    return swipeLeftPanelRenderer(this.props, swipable);
+    let style = styles.file;
+
+    if (isSelectedItem(item, selectedItem)) {
+      style = styles.fileSelected;
+    }
+
+    return style;
+  }
+
+  isLeftSwipeable = () => {
+    const { isLeftSwipeable } = this.props;
+
+    return isLeftSwipeable(this.props);
   };
 
-  renderSwipeRightPanel = (swipable) => {
+  renderSwipeLeftPanel = (swipeContainer) => {
+    const { swipeLeftPanelRenderer } = this.props;
+
+    return swipeLeftPanelRenderer(this.props, swipeContainer);
+  };
+
+  isRightSwipeable = () => {
+    const { isRightSwipeable } = this.props;
+
+    return isRightSwipeable(this.props);
+  };
+
+  renderSwipeRightPanel = (swipeContainer) => {
     const { swipeRightPanelRenderer } = this.props;
 
-    return swipeRightPanelRenderer(this.props, swipable);
+    return swipeRightPanelRenderer(this.props, swipeContainer);
   };
 
   render() {
-    const { swipeLeftPanelRenderer, swipeRightPanelRenderer, onPress } = this.props;
+    const {
+      swipeLeftPanelRenderer,
+      swipeRightPanelRenderer,
+      isLeftSwipeable,
+      isRightSwipeable,
+      onPress,
+    } = this.props;
+    
     const leftRenderer = swipeLeftPanelRenderer ? this.renderSwipeLeftPanel : undefined;
     const rightRenderer = swipeRightPanelRenderer ? this.renderSwipeRightPanel : undefined;
+    const leftSwipeable = isLeftSwipeable ? this.isLeftSwipeable : undefined;
+    const rightSwipeable = isRightSwipeable ? this.isRightSwipeable : undefined;
 
     return (
-      <Container swipeLeftPanelRenderer={leftRenderer} swipeRightPanelRenderer={rightRenderer}>
+      <Container
+        swipeLeftPanelRenderer={leftRenderer}
+        swipeRightPanelRenderer={rightRenderer}
+        isLeftSwipeable={leftSwipeable}
+        isRightSwipeable={rightSwipeable}
+      >
         <FileRow
           {...this.props}
           onPress={this.handlePress}
-          style={styles.paddingLeft5}
+          style={this.getStyle()}
           touchable={!!onPress}
         />
       </Container>

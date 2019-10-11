@@ -5,6 +5,8 @@ import { Text } from '@actualwave/react-native-kingnare-style';
 
 import ProjectsView from './ProjectsView';
 
+import styles from './styles';
+
 /*
  * Projects should always have undeletable folders with files that
  can be changed but first version in history is protected from removal.
@@ -69,12 +71,24 @@ class Projects extends Component {
 
   static getDerivedStateFromProps({ items, additionalItems }) {
     return {
-      contents: [...(items || []), ...additionalItems],
+      contents: [...(items || []), ...additionalItems].sort(({ pinned: a }, { pinned: b }) => {
+        if (a && b) return 0;
+        else if (a) return -1;
+
+        return 1;
+      }),
     };
   }
 
   render() {
-    const { renderListLoading, renderListEmpty, items, additionalItems, ...props } = this.props;
+    const {
+      renderListLoading,
+      renderListEmpty,
+      items,
+      additionalItems,
+      renderLoading,
+      ...props
+    } = this.props;
     const { contents } = this.state;
 
     if (!items) {
