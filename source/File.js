@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 
 import {
   Text,
@@ -11,6 +11,12 @@ import {
 import { FileRow } from '@actualwave/react-native-file-tree';
 
 import Container from './Container';
+
+const styles = StyleSheet.create({
+  paddingLeft5: {
+    paddingLeft: 5,
+  },
+});
 
 /*
   Make file expandable too to display its versions, topmost newest.
@@ -38,16 +44,16 @@ class File extends Component {
     return onPress({ item, parent, project });
   };
 
-  renderSwipeLeftPanel = () => {
+  renderSwipeLeftPanel = (swipable) => {
     const { swipeLeftPanelRenderer } = this.props;
 
-    return swipeLeftPanelRenderer(this.props);
+    return swipeLeftPanelRenderer(this.props, swipable);
   };
 
-  renderSwipeRightPanel = () => {
+  renderSwipeRightPanel = (swipable) => {
     const { swipeRightPanelRenderer } = this.props;
 
-    return swipeRightPanelRenderer(this.props);
+    return swipeRightPanelRenderer(this.props, swipable);
   };
 
   render() {
@@ -60,9 +66,7 @@ class File extends Component {
         <FileRow
           {...this.props}
           onPress={this.handlePress}
-          style={{
-            padding: 5,
-          }}
+          style={styles.paddingLeft5}
           touchable={!!onPress}
         />
       </Container>

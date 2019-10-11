@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 
 import {
   SWIPE_CENTER,
@@ -8,18 +8,21 @@ import {
   BACKGROUND_COLOR,
 } from '@actualwave/react-native-kingnare-style';
 
-const Dim = () => (
-  <View
-    style={{
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 0xffffff66,
-    }}
-  />
-);
+const styles = StyleSheet.create({
+  container: {
+    height: 42,
+  },
+  dim: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 0xffffff66,
+  },
+});
+
+const Dim = () => <View style={styles.dim} />;
 
 class Container extends Component {
   static propTypes = {
@@ -39,7 +42,7 @@ class Container extends Component {
     this.setState({ dimmed: true });
   };
 
-  handleSwipeFinish = (_, position) => {
+  handleAnimationFinish = (_, position) => {
     if (position === SWIPE_CENTER) {
       this.setState({ dimmed: false });
     }
@@ -55,13 +58,12 @@ class Container extends Component {
     return (
       <SwipeableXContainer
         onSwipeConfirm={this.onSwipeConfirm}
-        onSwipeFinish={this.handleSwipeFinish}
-        style={{ height: 42 }}
+        onAnimationFinish={this.handleAnimationFinish}
+        style={styles.container}
         contentContainerStyle={{
           backgroundColor: BACKGROUND_COLOR,
         }}
-        {...props}
-      >
+        {...props}>
         {children}
         {this.renderDim()}
       </SwipeableXContainer>

@@ -24,6 +24,7 @@ class RootProjects extends Component {
     getRootDirectories: PropTypes.func,
     swipeLeftPanelRenderer: PropTypes.func,
     swipeRightPanelRenderer: PropTypes.func,
+    folderAdditionalContentRenderer: PropTypes.func,
     renderListLoading: PropTypes.func,
   };
 
@@ -32,6 +33,7 @@ class RootProjects extends Component {
     getRootDirectories: getDefaultRootDirectories,
     swipeLeftPanelRenderer: undefined,
     swipeRightPanelRenderer: undefined,
+    folderAdditionalContentRenderer: undefined,
     renderListLoading: defaultLoadingRenderer,
   };
 
