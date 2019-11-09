@@ -12,7 +12,8 @@ import { styles } from './ProjectsView';
 
 const renderEmpty = () => (
   <Text style={styles.projectsEmptyText}>
-    No projects created yet. Start with creating a Project, Folder or a single File.
+    No projects created yet. Start with creating a Project, Folder or a single
+    File.
   </Text>
 );
 
@@ -69,11 +70,13 @@ class RootProjects extends Component {
         snippets,
         modules,
         tools,
+        examples,
+        transpilerPlugins,
       } = await getRootDirectories();
 
       projects.addUpdatedListener(this.readContents);
 
-      const directories = [snippets, templates, modules, containers, tools];
+      const directories = [examples, snippets, containers, tools, templates, modules, transpilerPlugins];
 
       directories.forEach((item) =>
         item.addUpdatedListener(() => {

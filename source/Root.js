@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { Text } from '@actualwave/react-native-kingnare-style';
 import {
-  getRoot as getRootDefault,
+  getWorkingDir,
   readDirectory as readDirectoryDefault,
 } from '@actualwave/rn-playground-projects';
 
@@ -27,7 +27,7 @@ class Root extends Component {
   };
 
   static defaultProps = {
-    getRoot: getRootDefault,
+    getRoot: getWorkingDir,
     readDirectory: readDirectoryDefault,
     listItemFilter: undefined,
     swipeLeftPanelRenderer: undefined,
