@@ -16,7 +16,7 @@ import styles from './styles';
 const SPACING = <View style={styles.projectViewSpacing} />;
 
 export const projectsItemRenderer = (item, index, props = {}) => {
-  const { type, name, directoryName } = item;
+  const { type, path } = item;
   let Component;
 
   switch (type) {
@@ -33,7 +33,7 @@ export const projectsItemRenderer = (item, index, props = {}) => {
       throw new Error(`Item of unknown type "${type}"`);
   }
 
-  return <Component key={directoryName || name} item={item} {...props} />;
+  return <Component key={path} item={item} {...props} />;
 };
 
 const projectsEmptyRenderer = () => {
