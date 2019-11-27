@@ -42,13 +42,13 @@ class Folder extends Component {
     onRead: undefined,
   };
 
-  static getDerivedStateFromProps({ selectedItem, item, isSelectedItem, isSelectedItemParent }) {
+  static getDerivedStateFromProps({ selectedItem, item, isSelectedItem, isSelectedItemParent }, { expanded }) {
     if (!selectedItem) {
       return null;
     }
 
     return {
-      expanded: isSelectedItem(item, selectedItem) || isSelectedItemParent(item, selectedItem),
+      expanded: isSelectedItem(item, selectedItem) || isSelectedItemParent(item, selectedItem) || expanded,
     };
   }
 
@@ -178,12 +178,7 @@ class Folder extends Component {
   };
 
   renderSwipeableContainer = (row) => {
-    const {
-      swipeLeftPanelRenderer,
-      swipeRightPanelRenderer,
-      isLeftSwipeable,
-      isRightSwipeable,
-    } = this.props;
+    const { swipeLeftPanelRenderer, swipeRightPanelRenderer, isLeftSwipeable, isRightSwipeable } = this.props;
 
     const leftRenderer = swipeLeftPanelRenderer ? this.renderSwipeLeftPanel : undefined;
     const rightRenderer = swipeRightPanelRenderer ? this.renderSwipeRightPanel : undefined;
@@ -195,8 +190,7 @@ class Folder extends Component {
         swipeLeftPanelRenderer={leftRenderer}
         swipeRightPanelRenderer={rightRenderer}
         isLeftSwipeable={leftSwipeable}
-        isRightSwipeable={rightSwipeable}
-      >
+        isRightSwipeable={rightSwipeable}>
         {row}
       </Container>
     );

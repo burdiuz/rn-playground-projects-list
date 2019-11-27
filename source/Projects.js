@@ -5,8 +5,6 @@ import { Text } from '@actualwave/react-native-kingnare-style';
 
 import ProjectsView from './ProjectsView';
 
-import styles from './styles';
-
 /*
  * Projects should always have undeletable folders with files that
  can be changed but first version in history is protected from removal.
