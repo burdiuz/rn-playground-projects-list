@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import FontFamily from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { Text } from '@actualwave/react-native-kingnare-style';
