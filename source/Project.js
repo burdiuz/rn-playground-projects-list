@@ -42,8 +42,9 @@ class Project extends Folder {
         onPress={this.handlePress}
         containerRenderer={this.renderSwipeableContainer}
         contentRenderer={this.renderContents}
-        contentLength={childrenCount}
-      />
+        contentLength={childrenCount}>
+        {this.renderFolderChildren()}
+      </ProjectRow>
     );
   }
 }
