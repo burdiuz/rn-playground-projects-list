@@ -2,19 +2,12 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { View, StyleSheet } from 'react-native';
 
-import {
-  SWIPE_CENTER,
-  SwipeableXContainer,
-  BACKGROUND_COLOR,
-} from '@actualwave/react-native-kingnare-style';
+import SwipeableXContainer, { SWIPE_CENTER } from '@actualwave/react-native-swipeable-x-container';
+import { BACKGROUND_COLOR } from '@actualwave/react-native-kingnare-style';
 
 import styles from './styles';
 
-const Dim = () => (
-  <View
-    style={styles.dim}
-  />
-);
+const Dim = () => <View style={styles.dim} />;
 
 class Container extends Component {
   static propTypes = {

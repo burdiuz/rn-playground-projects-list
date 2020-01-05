@@ -4,12 +4,15 @@
   "private": true,
   "main": "source/index.js",
   "dependencies": {
-    "react": "file:../RNTestApp/node_modules/react",
-    "react-native": "file:../RNTestApp/node_modules/react-native",
-    "prop-types": "file:../RNTestApp/node_modules/prop-types",
-    "@actualwave/react-native-kingnare-style": "file:../RNTestApp/node_modules/@actualwave/react-native-kingnare-style",
-    "@actualwave/is-function": "file:../RNTestApp/node_modules/@actualwave/is-function",
-	  "@actualwave/react-native-file-tree": "file:../react-native-file-tree",
-	  "@actualwave/rn-playground-projects": "file:../rn-playground-projects"
+    "@actualwave/is-function": "^0.0.1",
+    "@actualwave/react-native-file-tree": "github:burdiuz/react-native-file-tree#master",
+    "@actualwave/react-native-kingnare-style": "^0.0.4",
+    "@actualwave/react-native-swipeable-x-container": "^0.0.1",
+    "@actualwave/rn-playground-projects": "github:burdiuz/rn-playground-projects"
+  },
+  "peerDependencies": {
+    "prop-types": "15.6.2",
+    "react": "16.6.0",
+    "react-native": ">0.57.3"
   }
 }
